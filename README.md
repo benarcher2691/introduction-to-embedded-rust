@@ -1,5 +1,9 @@
 # Introduction to Embedded Rust
 
+> This is a fork of [ShawnHymel/introduction-to-embedded-rust](https://github.com/ShawnHymel/introduction-to-embedded-rust).
+> All course content and the original development environment are the work of [Shawn Hymel](https://github.com/ShawnHymel).
+> This fork only adjusts the `Dockerfile` so the image builds on the pinned Rust 1.85.0 toolchain (see [Build notes](#build-notes)).
+
 ## Getting Started
 
 Build the Docker image:
@@ -33,6 +37,32 @@ rustlings --manual-run
 ```
 
 > **Note**: by default, *rustlings* uses *rust-analyzer* to watch for file changes to check if your code works or not. This sometimes struggles in a container, so I recommend using `--manual-run` to disable this feature. It just means you need to press `r` in the *rustlings* prompt when you want to check your code.
+
+## Build notes
+
+The base image pins the Rust toolchain to `1.85.0` (`rust:1.85.0-bookworm`).
+Installing `mdbook` without a version constraint pulls the latest release, which
+now requires a newer compiler and breaks the build:
+
+```
+error: cannot install package `mdbook 0.5.3`, it requires rustc 1.88.0 or newer,
+while the currently active rustc version is 1.85.0
+```
+
+To keep the build working on Rust 1.85.0, the `Dockerfile`:
+
+- Pins `mdbook` to **0.4.52** via a `MDBOOK_VERSION` build arg (0.4.52 supports rustc 1.82+).
+- Installs `mdbook` in its own layer with `--locked`, so its transitive
+  dependencies (e.g. the `icu_*` and `idna` crates) stay on the versions in
+  mdbook's bundled `Cargo.lock` rather than resolving to newer ones that raise
+  the minimum supported rustc past 1.85.0.
+
+```dockerfile
+RUN cargo install --locked mdbook@${MDBOOK_VERSION}
+```
+
+If you bump the base image to Rust 1.88.0 or newer, you can drop the pin and the
+`--locked` flag and install the latest `mdbook` directly.
 
 ## License
 
