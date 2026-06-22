@@ -1,0 +1,5 @@
+workspace/rustlings/
+target/
+*.uf2
+# Local Claude Code settings
+.claude/
