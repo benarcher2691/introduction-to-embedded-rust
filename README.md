@@ -20,6 +20,11 @@ Linux, macOS, Windows (PowerShell):
 docker run --rm -it -p 3000:3000 -v "$(pwd)/workspace:/home/student/workspace" -w /workspace env-embedded-rust
 ```
 
+On startup the container serves [The Rust Book](https://doc.rust-lang.org/book/)
+locally via `mdbook` at [http://localhost:3000](http://localhost:3000):
+
+![The Rust Book served locally at http://localhost:3000](docs/images/rust-book.png)
+
 ## Initialize rustlings
 
 If you would like to practice rust with the official [rustlings](https://github.com/rust-lang/rustlings) exercises, you should navigate to the *workspace/* directory (in the container) and initialize *rustlings*:
